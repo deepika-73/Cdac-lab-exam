@@ -1,0 +1,127 @@
+ENTITYFRAMEWORK MVC CRUD STEPS:
+
+create Employee.cs:
+
+[Table("Employee")]
+    public class Employee
+    {
+        [Key]
+        public int EmpId { get; set; }
+        [Required(ErrorMessage ="Please Enter Name")]      
+        public string EmpName { get; set; }
+        public double EmpSal { get; set; }     
+        public string EmpPosition{ get; set; }    
+        public string EmpGender { get; set; }
+
+    }
+	
+-----------------------------------------------------------------------------------------------------------------------
+create EmployeeContext.cs EXTENDED BY DbContext =>download EntityFramework
+
+ public EmployeeContext():base("EmployeeDataBase")
+        {
+                
+        }
+        public DbSet<Employee> Employee { get; set; }
+		
+----------------------------------------------------------------------------------------------------------------------
+references -> manage NuGet package->install Entity framework
+------------------------------------------------------------------------------------------------------------------------------
+add connection string into web config
+
+<connectionStrings>
+    <add name="DefaultConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.;Initial Catalog=CDAC_New; Integrated Security = true;" />
+  </connectionStrings>
+-----------------------------------------------------------------------------------------------------------------------------
+Tools -> NuGet manager console
+
+Enable-Migrations
+add-migration initial
+update-database -verbose
+Install-Package Newtonsoft.Json -Version 12.0.3
+
+-------------------------------------------------------------------------------------------------------------------------
+create EmployeeController.cs 
+
+add object of EmployeeContext:
+					EmployeeContext context = new EmployeeContext();
+-----------------------------------------------------------------------------------------------------------------------
+methods of EmployeeController.cs 
+
+GET LIST:
+public ActionResult Index()
+        {
+           var Emplist=context.Employee.ToList();
+            return View(Emplist);
+        }
+
+----------------------------------------------------------------------------------------------------------------------------
+ CREATE:
+  
+		[HttpGet]
+        public ActionResult Create()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(Employee emp)
+        {
+            if (ModelState.IsValid)
+            {
+                context.Employee.Add(emp);
+                context.SaveChanges();
+                return RedirectToAction("Index", "Employee");
+            }
+            return View();
+
+        }
+----------------------------------------------------------------------------------------------------------------------------
+EDIT:
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+          var emp=context.Employee.Find(id);
+
+             return View(emp);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(Employee emp)
+        {
+            if (ModelState.IsValid)
+            {
+                context.Entry(emp).State = EntityState.Modified;
+                context.SaveChanges();
+                return RedirectToAction("Index", "Employee");
+            }
+            else
+            {
+                return View();
+            }
+                 
+        }
+----------------------------------------------------------------------------------------------------------------------------
+DELETE:
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            var emp = context.Employee.Find(id);
+            return View(emp);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(int id,Employee emp)
+        {
+            emp = context.Employee.Find(id);
+            context.Employee.Remove(emp);
+            context.SaveChanges();
+            return RedirectToAction("Index", "Employee");
+        }
+
+----------------------------------------------------------------------------------------------------------------------------
+CREATE VIEWS :)
+
+
+

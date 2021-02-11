@@ -1,0 +1,121 @@
+EntityFramework WEB-API:
+
+create User.cs
+public class User
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Contact { get; set; }
+    }
+----------------------------------------------------------------------------------------------------------------------------
+create DataBaseContext.cs EXTENDED BY DbContext =>download EntityFramework
+
+ public DataBaseContext() : base("DefaultConnection") { } 
+        public DbSet<User> Users { get; set; } 
+
+-------------------------------------------------------------------------------------------------------------------------------
+references -> manage NuGet package->install Entity framework
+------------------------------------------------------------------------------------------------------------------------------
+add connection string into web config
+
+<connectionStrings>
+    <add name="DefaultConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.;Initial Catalog=CDAC_New; Integrated Security = true;" />
+  </connectionStrings>
+-----------------------------------------------------------------------------------------------------------------------------
+Tools -> NuGet manager console
+
+PM> Enable-Migrations
+PM> add-migration initial
+PM> update-database -verbose
+PM> Install-Package Newtonsoft.Json -Version 12.0.3
+
+---------------------------------------------------------------------------------------------------------------------------
+create UserController:
+
+add reference->
+
+DatabaseContext db = new DatabaseContext();
+.............................................................................................................................
+public IEnumerable<User> GetUsers()
+        {
+            return db.Users.ToList();
+        }
+
+        public User GetUser(int id)
+        {
+            return db.Users.Find(id);
+        }
+...........................................................................................................................
+ [HttpPost]
+        public HttpResponseMessage AddUser(User model)
+        {
+            try
+            {
+                db.Users.Add(model);
+                db.SaveChanges();
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Created);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return response;
+                throw;
+            }
+        }
+.................................................................................................................................................................
+[HttpPut]
+        public HttpResponseMessage UpdateUser(int id, User model)
+        {
+            try
+            {
+                if (id == model.UserId)
+                {
+                    db.Entry(model).State = EntityState.Modified;
+
+                    db.SaveChanges();
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    return response;
+                }
+                else
+                {
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.NotModified);
+                    return response;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return response;
+                throw;
+            }
+        }
+................................................................................................................................................................
+ [HttpDelete]
+        public HttpResponseMessage DeleteUser(int id)
+        {
+            User user = db.Users.Find(id);
+            {
+                if (user != null)
+                {
+                    db.Users.Remove(user);
+                    db.SaveChanges();
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    return response;
+                }
+                else
+                {
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.NotFound);
+                    return response;
+                }
+            }
+        }
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+now build -> u will get an forbidden error
+
+http://localhost:port/api/User
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+

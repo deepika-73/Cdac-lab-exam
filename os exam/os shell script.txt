@@ -1,0 +1,13 @@
+Leap year:
+
+#!/bin/bash
+echo "FIND LEAP YEAR"
+echo ENTER YEAR
+read y
+if [ $(( y%4 )) -eq 0 -a $(( y%100 )) -ne 0 -o $(( y%400 )) -eq 0 ]
+then
+        echo LEAP YEAR
+else
+        echo NOT A LEAP YEAR
+fi
+-------------------------------------------------------------------------------------------------------------

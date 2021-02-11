@@ -1,0 +1,37 @@
+Asp.NET Validations:
+
+----------------------------------------------------------------------------------------------------------------------------------
+[Display(Name = "Company Id")] 
+[required]
+----------------------------------------------------------------------------------------------------------------------------------
+[Required (ErrorMessage="Company Email address Required")]  
+[DataType(DataType.EmailAddress)]  
+public string CompanyEmailAddress { get; set; }
+----------------------------------------------------------------------------------------------------------------------------------
+[DataType(DataType.PhoneNumber)]  
+public int CompanyPhoneNumber { get; set; }  
+----------------------------------------------------------------------------------------------------------------------------------
+[Range (1,100)]  
+[DataType (DataType.Currency)]  
+public Decimal MinimumSalaryPerEmp { get; set; }  
+---------------------------------------------------------------------------------------------------------------------------------- 
+[DataType (DataType.MultilineText)]  
+public string CompanyDescription { get; set; }  
+----------------------------------------------------------------------------------------------------------------------------------
+[DataType (DataType.PostalCode , ErrorMessage = " Please Enter Valid Postal Code")]  
+public String PostalCode { get;set;}
+----------------------------------------------------------------------------------------------------------------------------------
+[DataType (DataType.PostalCode , ErrorMessage = " Please Enter Valid Postal Code")]  
+public String PostalCode { get; set; }
+----------------------------------------------------------------------------------------------------------------------------------
+[Required (ErrorMessage="No.of working Hours Required")]  
+[Range(2, 10, ErrorMessage = "Please Provide correct range. It should be minimum 2 and not more than 10 ")]  
+----------------------------------------------------------------------------------------------------------------------------------
+[StringLength (10 , MinimumLength =5)]  
+[Display(Name = "User name")] 
+----------------------------------------------------------------------------------------------------------------------------------
+ 
+[RegularExpression (@"(\S\D)+", ErrorMessage =" Space and numbers not allowed")] 
+----------------------------------------------------------------------------------------------------------------------------------
+[Table("employee")]
+----------------------------------------------------------------------------------------------------------------------------------
