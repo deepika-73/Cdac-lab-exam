@@ -1,0 +1,392 @@
+ADO.NET CRUD:
+
+CREATE TABLE=>
+
+CREATE TABLE [dbo].[Employee]
+
+(
+
+[EmpID] [int] IDENTITY(1,1) NOT NULL Primary key,
+
+[Name] [varchar](100) NULL,
+
+[EmpSalary] [Decimal](100) NOT NULL,
+
+[EmpPosition] [varchar](100) NULL,
+
+[EmpGender] [varchar](100) NOT NULL,
+
+[Address] [varchar](300) NULL,
+
+[Mobileno] [varchar](15) NULL,
+
+[Birthdate] [datetime] NULL,
+
+[EmailID] [varchar](300) NULL,
+
+)
+----------------------------------------------------------------------------------
+GET DETAILS:
+
+GO
+/****** Object:  StoredProcedure [dbo].[spGetEmployee]    Script Date: 10-12-2020 10:26:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create procedure [dbo].[spGetEmployee]    
+as    
+begin     
+select * from Employee    
+end
+GO
+--------------------------------------------------------------------------------------------
+INSERT DATA:
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create procedure [dbo].[spAddNew]    
+(    
+@Name nvarchar(50),    
+@Position nvarchar(50),
+@Salary decimal,    
+@dob datetime,    
+@EmailId nvarchar(50),
+@MobileNo nvarchar,
+@Address nvarchar(50),
+@Gender nvarchar(10)
+)    
+as    
+begin    
+    insert into Employee(Name,EmpPosition,EmpSalary,EmailID,Birthdate,Mobileno,Address,EmpGender)    
+    values(@Name,@Position,@Salary,@EmailId,@dob,@MobileNo,@Address,@Gender)    
+end   
+GO
+-------------------------------------------------------------------------------------------
+UPDATE DATA:
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create procedure [dbo].[spUpdateEmployee]    
+(    
+@EmpId int,    
+@Name nvarchar(50), 
+@EmpSalary decimal,  
+@EmpPosition nvarchar(50), 
+@EmpGender nvarchar(20), 
+@Address nvarchar(300),
+@Mobileno  nvarchar(15),
+@Birthdate datetime ,
+@EmailId nvarchar(300) 
+   
+  
+)    
+as    
+begin    
+    update Employee     
+    set Name=@Name,EmpSalary=@EmpSalary,EmpPosition=@EmpPosition,EmpGender=@EmpGender 
+	,Address=@Address ,Mobileno=@Mobileno,Birthdate=@Birthdate,EmailId=@EmailId
+    where EmpId=@EmpId    
+end   
+
+GO
+---------------------------------------------------------------------------------------------------------------
+DELETE DATA:
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create procedure [dbo].[spDeleteEmployee]    
+(    
+@Id int    
+)    
+as    
+begin    
+    delete from Employee where EmpID=@Id    
+end
+-------------------------------------------------------------------------------------------------------------------
+Employee class:
+		public int EmpId { get; set; }
+
+        [Required(ErrorMessage ="Name is required")]
+        public string Name { get; set; }
+        public string EmpPosition { get; set; }
+
+        [Required(ErrorMessage ="Salary is required")]
+        public double EmpSalary { get; set; }
+
+        [DataType(DataType.EmailAddress)]
+        public string EmailID { get; set; }
+        public DateTime Birthdate { get; set; }
+        
+        [DataType(DataType.PhoneNumber)]
+        public string Mobileno { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Address { get; set; }
+        [Required(ErrorMessage ="Gender is required")]
+        public string EmpGender { get; set; }
+		
+------------------------------------------------------------------------------------------------------------------
+Add Connection string between <configuration> and <appSettings>:
+
+<connectionStrings>
+		<add name="EmployeeContext" connectionString="data source=.; database=Madhu; integrated security=true;" providerName="System.Data.SqlClient"/>
+	</connectionStrings>
+	
+-------------------------------------------------------------------------------------------------------------------
+
+ INTERFACE:
+ interface IEmployee
+    {
+        IList<Employee> GetEmployees();
+        void Insert(Employee employee);
+        void Update(Employee employee);
+        void Delete(Employee id);
+        Employee GetEmployeeById(int? id);
+
+
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+IMPLEMENTATION CLASS:
+Add connection String in Employeerepo class:
+private string ConnectionString = ConfigurationManager.ConnectionStrings["EmployeeContext"].ConnectionString;
+-------------------------------------------------------------------------------------------------------------------
+Get Employees:
+public IList<Employee> GetEmployees()
+        {
+            List<Employee> employees = new List<Employee>();
+
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                SqlCommand cmd = new SqlCommand("spGetEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                   
+
+                        Employee emp = new Employee()
+                        {
+                            EmpId = Convert.ToInt32(rdr["EmpId"]),
+                            Name = rdr["Name"].ToString(),
+                            EmpPosition = rdr["EmpPosition"].ToString(),
+                            EmailID = rdr["EmailID"].ToString(),
+                            Birthdate = Convert.ToDateTime(rdr["Birthdate"]),
+                            Mobileno = rdr["Mobileno"].ToString(),
+                            EmpGender = rdr["EmpGender"].ToString(),
+                            EmpSalary = Convert.ToDouble(rdr["EmpSalary"]),
+                            Address = rdr["Address"].ToString()
+
+
+                        };
+                    employees.Add(emp);
+
+
+                }
+
+                return (employees);
+
+            }
+
+        }
+-------------------------------------------------------------------------------------------------------------------------
+Get Employee By Id:
+        public Employee GetEmployeeById(int? id)
+        {
+            Employee employee = new Employee();
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                SqlCommand cmd = new SqlCommand("spGetEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+
+                    Employee emp = new Employee()
+                    {
+                        EmpId = Convert.ToInt32(rdr["EmpId"]),
+                        Name = rdr["Name"].ToString(),
+                        EmpPosition = rdr["EmpPosition"].ToString(),
+                        EmailID = rdr["EmailID"].ToString(),
+                        Birthdate = Convert.ToDateTime(rdr["Birthdate"]),
+                        Mobileno = rdr["Mobileno"].ToString(),
+                        EmpGender = rdr["EmpGender"].ToString(),
+                        EmpSalary = Convert.ToDouble(rdr["EmpSalary"]),
+                        Address = rdr["Address"].ToString()
+
+                    };
+                    if (id == emp.EmpId)
+                        return emp;
+                }
+            return null;
+
+            }
+
+        }
+--------------------------------------------------------------------------------------------------------------------------
+INSERT:   
+
+   public void Insert(Employee employee)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                var cmd = new SqlCommand("spAddNew", con);
+               
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                con.Open();
+                cmd.Parameters.AddWithValue("@Name", employee.Name);
+                cmd.Parameters.AddWithValue("@Position", employee.EmpPosition);
+                cmd.Parameters.AddWithValue("@Salary", employee.EmpSalary);
+                cmd.Parameters.AddWithValue("@dob", employee.Birthdate);
+                cmd.Parameters.AddWithValue("@EmailId", employee.EmailID);
+                cmd.Parameters.AddWithValue("@MobileNo", employee.Mobileno);
+                cmd.Parameters.AddWithValue("@Address", employee.Address);
+                cmd.Parameters.AddWithValue("@Gender", employee.EmpGender);
+               
+                cmd.ExecuteNonQuery();
+            }
+
+        }
+------------------------------------------------------------------------------------------------------------------------
+ UPDATE:
+
+ public void Update(Employee employee)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                var cmd = new SqlCommand("spUpdateEmployee", con);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                con.Open();
+                cmd.Parameters.AddWithValue("@EmpId", employee.EmpId);
+                cmd.Parameters.AddWithValue("@Name", employee.Name);
+                cmd.Parameters.AddWithValue("@EmpPosition", employee.EmpPosition);
+                cmd.Parameters.AddWithValue("@EmpSalary", employee.EmpSalary);
+                cmd.Parameters.AddWithValue("@Address", employee.Address);
+                cmd.Parameters.AddWithValue("@EmpGender", employee.EmpGender);
+                cmd.Parameters.AddWithValue("@EmailID", employee.EmailID);
+                cmd.Parameters.AddWithValue("@Birthdate", employee.Birthdate);
+                cmd.Parameters.AddWithValue("@Mobileno", employee.Mobileno);
+                cmd.ExecuteNonQuery();
+            }
+        }
+-----------------------------------------------------------------------------------------------------------------------------
+DELETE:
+        public void Delete(Employee employee)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                var cmd = new SqlCommand("spDeleteEmployee", con);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                con.Open();
+                cmd.Parameters.AddWithValue("@Id", employee.EmpId);
+                cmd.ExecuteNonQuery();
+
+            }
+        }
+		
+-----------------------------------------------------------------------------------------------------------------------
+CONTROLLER:
+EmployeeRepo db = new EmployeeRepo();//Object of implementation class
+---------------------------------------------------------------------------------------------------------------------------
+GET EMPLOYEE:
+
+        // GET: Employee
+        public ActionResult Index()
+        {
+            var employee = db.GetEmployees();
+            return View(employee);
+        }
+---------------------------------------------------------------------------------------------------------------------------
+CREATE EMPLOYEE:
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(Employee emp)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Insert(emp);
+                return RedirectToAction("Index", "Employee");
+            
+            }
+            return View();
+
+        }
+--------------------------------------------------------------------------------------------------------------------------
+EDIT EMPLOYEE:
+        [HttpGet]
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var employee = db.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return HttpNotFound();
+            }
+            return View(employee);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Employee employee)
+        {
+            db.Update(employee);
+            return RedirectToAction("Index", "Employee");
+        }
+
+----------------------------------------------------------------------------------------------------------------------------
+DELETE EMPLOYEE:
+        [HttpGet]
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var employee = db.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return HttpNotFound();
+            }
+            return View(employee);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public ActionResult ConfirmDelete(int id)
+        {
+            var employee = db.GetEmployeeById(id);
+            db.Delete(employee);
+            return RedirectToAction("Index", "Employee");
+        }
+---------------------------------------------------------------------------------------------------------------------------
+ADD ALL VIEWS :)
+
+
+ 
+ 
+
+
+
+
+

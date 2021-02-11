@@ -1,0 +1,71 @@
+int[] numbers = { 5, 10, 8, 3, 6, 12};
+
+//Query syntax:
+
+        IEnumerable<int> numQuery1 =
+            from num in numbers
+            where num % 2 == 0
+            orderby num
+            select num;
+
+
+//Method syntax:
+
+        IEnumerable<int> numQuery2 = numbers.Where(num => num % 2 == 0).OrderBy(n => n);
+-----------------------------------------------------------------------------------------
+GROUP BY
+
+// Group students by the first letter of their last name
+// Query variable is an IEnumerable<IGrouping<char, Student>>
+var studentQuery2 =
+    from student in students
+    group student by student.Last[0] into g
+    orderby g.Key
+    select g;
+
+----------------------------------------------------------------------------------------
+ORDER BY
+
+// Create a delicious data source.
+        string[] fruits = { "cherry", "apple", "blueberry" };
+
+        // Query for ascending sort.
+        IEnumerable<string> sortAscendingQuery =
+            from fruit in fruits
+            orderby fruit //"ascending" is default
+            select fruit;
+
+        // Query for descending sort.
+        IEnumerable<string> sortDescendingQuery =
+            from w in fruits
+            orderby w descending
+            select w;
+
+----------------------------------------------------------------------------------------
+SELECT
+
+//Create the data source
+        List<int> Scores = new List<int>() { 97, 92, 81, 60 };
+
+        // Create the query.
+        IEnumerable<int> queryHighScores =
+            from score in Scores
+            where score > 80
+            select score;
+---------------------------------------------------------------------------------------
+INNER JOIN 
+
+var innerJoinQuery =
+    from category in categories
+    join prod in products on category.ID equals prod.CategoryID
+    select new { ProductName = prod.Name, Category = category.Name }; //produces flat sequence
+
+---------------------------------------------------------------------------------------
+GROUP JOIN
+
+var query = from person in people
+                join pet in pets on person equals pet.Owner into gj
+                select new { OwnerName = person.FirstName, Pets = gj };
+---------------------------------------------------------------------------------------
+TO DO -> Read about Enumerable and Queryable
+

@@ -1,0 +1,89 @@
+--------------------------------------------Mysql-----------------------------------
+1. DISPLAY STUDENT NO. AND TOTAL MARKS OF EACH STUDENT HAVING TOTAL MARKS GREATER
+THAN 160.
+=>SELECT student_no , sum(mark) AS total 
+  FROM marks
+  GROUP BY student_no 
+  HAVING total>160;
+
+
+2. DISPLAY STUDENT NAME (FORENAME + SURNAME), MODULE NAME, AND MARK OF STUDENTS
+HAVING MARK GREATER THAN THE MARK OF EMILE ZOLA IN THE DATABASES MODULE USING
+JOINS.
+=>
+
+
+3. CREATE A FOREIGN KEY CONSTRAINT ON THE ‘STUDENT_NO’ COLUMN OF THE MARKS TABLE
+ASSUMING ‘STUDENT_NO’ IS THE PRIMARY KEY OF THE STUDENT TABLE.
+=>
+ALTER TABLE students add primary key(student_no);
+
+ALTER TABLE marks   
+ADD FOREIGN KEY (student_no) REFERENCES students (student_no);
+
+
+
+4. WRITE A FUNCTION TO TAKE THE INPUT AS MARK AND RETURN THE GRADE.
+GRADE IS A IF MARK IS 80 AND ABOVE
+ELSE GRADE IS B IF MARK IS IN RANGE 65 TO 80
+ELSE GRADE IS C IF MARK IS IN RANGE 50 TO 64
+OTHERWISE, FAIL IF MARK < 50.
+=>
+delimiter #
+create function display_grade
+(
+   marks integer
+)
+returns varchar(10)
+deterministic
+begin
+	DECLARE grade varchar(10) default '';
+	if marks >= 80 then set grade= 'A';
+	elseif marks >= 65 and marks < 80 then set grade= 'B';
+        elseif marks >= 50 and marks <= 64 then set grade= 'C';
+	else  set grade= 'FAIL'; 
+        end if;
+        return grade;
+end#
+
+select display_grade(80);
+select display_grade(20);
+
+
+
+5. WRITE A STORED PROCEDURE TO DISPLAY ALL THE TABLES WHOSE NAME STARTS WITH M.
+=>
+delimiter #	
+CREATE PROCEDURE display_tables()
+BEGIN
+    DECLARE var_table VARCHAR(50);
+    DECLARE notfound BOOLEAN DEFAULT false;
+    DECLARE c_table_list CURSOR FOR SELECT table_name FROM information_schema.tables WHERE table_name Like "M%";
+    DECLARE  continue HANDLER FOR not found SET notfound=true;
+	OPEN c_table_list;
+	cur_loop:LOOP
+        FETCH c_table_list INTO var_table;
+        IF notfound THEN
+	   LEAVE cur_loop;
+	END IF;
+        SELECT var_table as NAME_OF_TABLES;      
+    END LOOP cur_loop;
+    CLOSE c_table_list;
+END#
+
+call display_tables();
+
+
+---------------------------------------------MONGODB-----------------------------------------
+
+1. DISPLAY EMPLOYEE NAME WHOSE SALARY(SAL) GREATER THAN 2000.
+=>db.emp.find({SAL:{$gt:"2000.00"}},{_id:0,ENAME:1});
+
+2. INSERT A RECORD IN THE EMP COLLECTION. (ASSUME EMPLOYEE DETAILS)
+=>db.emp.insert({EMPNO:"88888",ENAME:"TOM",JOB:"CLERK",MGR:"7902",HIREDATE:"1/20/1991",SAL:"8888",COMM:"",DEPTNO:10})
+
+3. DELETE THE RECORD OF THE EMPLOYEE WHOSE NAME IS FORD.
+=>db.emp.remove({ENAME:"FORD"});
+
+
+

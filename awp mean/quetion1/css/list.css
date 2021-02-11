@@ -1,0 +1,37 @@
+* {
+    margin: 0%;
+    padding: 0%;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.main {
+    margin: auto;
+    max-width: 2000px;
+}
+
+.title {
+    left: 35%;
+    top: 10%;
+    position: absolute;
+}
+
+.title h1 {
+    color: black;
+    font-size: 40px;
+}
+
+.list {
+    left: 35%;
+    top: 23%;
+    position: absolute;
+}
+
+.list table,
+tr,
+td,
+th {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 14px;
+    color: black;
+}

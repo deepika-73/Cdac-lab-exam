@@ -1,0 +1,88 @@
+Execl first demo:
+
+execl("/usr/bin/gcc","gcc","-c","/home/singhal/Desktop/day10/div.c",NULL);
+waitpid(-1,&wstatus,0);
+if(WIFEXITED(wstatus))
+{
+execl("/usr/bin/gcc","gcc","main.o","sum.o","sub.o","mul.o","div.o","-o","calc.out",NULL);
+}
+
+#include<stdio.h>
+#include<unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+
+	pid_t pid[5];
+	int wstatus;
+	int i=0;
+	int flag=0;
+	for(i=0;i<5;i++)
+	{
+		pid[i]=fork();
+		
+		if(pid[i]<0)
+		{
+			printf("Process creation failed\n");
+		}
+		if(pid[i]==0)
+		{
+			sleep(1);
+			if(i==0)
+				execl("/usr/bin/google-chrome","google-chrome",NULL);
+			if(i==1)
+				execl("/usr/bin/google-chrome","youtube","YouTube.com",NULL);
+			if(i==2)
+				execl("/usr/bin/gedit","gedit",NULL);
+			if(i==3)
+				execl("/usr/bin/google-chrome","gmail","Gmail.com",NULL);
+			if(i==4)
+				execl("/usr/bin/gcc","gcc","/home/singhal/Desktop/day10/add.c",NULL);
+			
+
+			 break;
+		}
+
+		if(pid[i]>0)
+		{
+		//	printf("waiting for child process to complete\n");		
+			printf("child id:%d\tparent id:%d\n",getpid(),getppid());
+				
+		}
+	}
+		waitpid(-1,&wstatus,0);	
+		if(WIFEXITED(wstatus))
+		{
+			printf("All child process exited normally\n");
+		}	
+			
+return 0;
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------
+print status of child process:
+
+ 1)   for (i=0; i<5; i++) 
+    { 
+        pid_t cpid = waitpid(pid[i], &stat, 0); 
+        if (WIFEXITED(stat)) 
+            printf("Child %d terminated with status: %d\n", 
+                   cpid, WEXITSTATUS(stat)); 
+    } 
+
+ 2)
+ int status;
+	waitpid(-1,&status,0);
+
+	if(WIFEXITED(status))
+		printf("Terminated normally\n");
+	if(WIFSTOPPED(status))
+		printf("Stopped by delivery of a signal\n");
+	if(WCOREDUMP(status))
+		printf("Produced a core dump\n");
+	if(WIFSIGNALED(status))
+		printf("Terminated by a signal\n")
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+

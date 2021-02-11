@@ -1,0 +1,10 @@
+#To compile a prog execute the following:
+
+gcc -pthread [-o <your_executable_location>] <C_Program>
+
+$gcc -pthread -o /tmp/dac_orphan.o Orphan.c 
+
+# Before compiling, its a safe step to delete the output (.o) file.
+# Reason is, if your new code changes fail at compile time, then your 
+# old executable will not be replaced. And you might end up running some
+# old code.

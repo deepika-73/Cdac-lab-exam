@@ -1,0 +1,75 @@
+ADO.NET TYPE OF CONNECTION:
+
+ConnectedMode:
+public void BindDataWithConnectedMode()
+            {
+                
+                SqlConnection con = null;
+                SqlCommand com = null;
+                try
+                {
+
+                    con = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CustomerDb;Integrated Security=True;");
+                    com = new SqlCommand("select * from Customer", con);
+                    con.Open();
+ 
+               SqlDataReader dr = com.ExecuteReader();
+
+                    while (dr.Read())
+                    {
+
+                        Console.WriteLine(dr["Name"] + " " + dr["Address"] + " " + dr["Mobileno"]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                string str = ex.Message;
+                Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    con.Close();
+                    com.Dispose();
+                }
+
+            }
+-----------------------------------------------------------------------------------------------------------------------------
+Disonnected Mode:
+
+public void BindDataWithDisonnectedMode()
+        {
+
+            SqlConnection con = null;
+          
+            try
+            {
+
+                con = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CustomerDb;Integrated Security=True;");
+                SqlDataAdapter da=new SqlDataAdapter("select * from Customer",con);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                if (ds != null && ds.Tables.Count != 0 && ds.Tables[0].Rows.Count > 0) 
+                {
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        string name = ds.Tables[0].Rows[i]["Name"].ToString();
+                        string adress = ds.Tables[0].Rows[i]["Address"].ToString();
+                        string mobileno = ds.Tables[0].Rows[i]["Mobileno"].ToString();
+                        Console.WriteLine(name + " " + adress + " " + mobileno);
+                    }
+
+                }
+                          
+            }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                
+            }
+
+        }
+-------------------------------------------------------------------------------------------------------------------------------
